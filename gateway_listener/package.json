@@ -1,0 +1,26 @@
+{
+    "name": "gateway_listener",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "jest"
+    },
+    "author": "Albert Carlos Omware",
+    "license": "ISC",
+    "prettier": {
+        "printWidth": 120,
+        "tabWidth": 4
+    },
+    "devDependencies": {
+        "jest": "^24.7.1"
+    },
+    "dependencies": {
+        "@iota/converter": "^1.0.0-beta.12",
+        "@iota/core": "^1.0.0-beta.12",
+        "@iota/mam": "^0.7.2",
+        "axios": "^0.18.0",
+        "dotenv": "^7.0.0",
+        "mqtt": "^2.18.8"
+    }
+}

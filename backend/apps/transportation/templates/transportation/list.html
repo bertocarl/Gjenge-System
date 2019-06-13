@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block js_imports %}
+{% endblock %}
+{% block content %}
+    {{ block.super }}
+    <br>
+    <div class="row">
+        <div class="center" style="width: 100%; text-align: center; margin-bottom: 20px">
+            <img src="http://www.wildeman-sl.nl/wp-content/uploads/2014/12/Logo-Wildeman-Storage-en-Logistics.jpg" alt="" width="150px" height="50">
+            <h4>My Transportations</h4>
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3">
+            <a class="btn btn-primary" href="{% url 'admin:api_transportation_add' %}">Create new Transportation</a>
+        </div>
+    </div>
+    <br>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Created</th>
+            <th>Type of material</th>
+            <th>Volume (tons)</th>
+            <th>Distance (km)</th>
+            <th>Risk</th>
+            <th>Status</th>
+            <th></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for transportation in transportations %}
+        <tr>
+            <td>{{ transportation.pk }}</td>
+            <td>{{ transportation.created_at }}</td>
+            <td>{{ transportation.type_of_hazardous_material.kind }}</td>
+            <td>{{ transportation.volume }}</td>
+            <td>{{ transportation.distance }}</td>
+            <td>{{ transportation.risk_value }}</td>
+            <td>{{ transportation.get_status_display }}</td>
+            <td><a target="_blank" href="https://mam-explorer.firebaseapp.com/?provider=https://nodes.devnet.iota.org:443&mode=restricted&root={{ transportation.first_root }}&key={{ transportation.key_trytes }}">Checkpoint</a></td>
+            <td>
+            {% if transportation.status == transportation.STATUS_CREATED %}
+                <a
+                        href="#"
+                        class="start"
+                        data-payload="{{ transportation.get_encrypted_payload }}"
+                        data-root="{{ transportation.first_root }}"
+                        data-id="{{ transportation.pk }}"
+                        data-stake="{{ transportation.stake }}"
+                >
+                    <button type="button" class="btn btn-success">Start</button>
+                </a>
+            {% elif transportation.status == transportation.STATUS_ACTIVE %}
+                <a href="#" class="finalize" data-id="{{ transportation.pk }}">
+                    <button type="button" class="btn btn-danger">Finish</button>
+                </a>
+            {% elif transportation.status == transportation.STATUS_FINISHED %}
+                <button type="button" class="btn btn-default" disabled>Finished</button>
+            {% endif %}
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block scripts %}
+    {{ block.super }}
+    <script type="application/javascript">
+    $(document).ready(function() {
+        $(".start").click(async function (e) {
+            e.preventDefault();
+            var payload = $(this).data("payload");
+            var root = $(this).data("root");
+            var stake = $(this).data("stake");
+            var transportation_id = $(this).data("id");
+
+            $.post("{% url 'api:receive-transportation-tx' %}", {
+                'transportation_id': transportation_id,
+            }, function( data ) {
+                if (data.success) {
+                    location.reload();
+                }
+                else {
+                    alert('Could not start this transportation.')
+                }
+            });
+
+        });
+        $('.finalize').click(function (e) {
+            e.preventDefault();
+            var transportation_id = $(this).data("id");
+            $.post(
+                "{% url 'api:finalize-transportation' %}", {'transportation_id': transportation_id,}, function( data ) {
+                    if (data.success) {
+                        location.reload();
+                    }
+                    else {
+                        alert('Could not finish this transportation.')
+                    }
+                });
+        })
+    })
+
+    </script>
+{% endblock %}
