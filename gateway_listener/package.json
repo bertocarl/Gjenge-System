@@ -19,7 +19,7 @@
         "@iota/converter": "^1.0.0-beta.12",
         "@iota/core": "^1.0.0-beta.12",
         "@iota/mam": "^0.7.2",
-        "axios": "^0.18.0",
+        "axios": "^0.21.1",
         "dotenv": "^7.0.0",
         "mqtt": "^2.18.8"
     }
